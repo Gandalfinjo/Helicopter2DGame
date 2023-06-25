@@ -10,7 +10,7 @@ public class Package extends Rectangle {
 
     public Package(double x, double y) {
         super(x, y, PACKAGE_SIZE, PACKAGE_SIZE);
-        setFill(Color.AQUA);
+        setFill(Color.rgb(123, 0, 44));
     }
 
     public static Package[] generatePackages(int numOfPackages, double sceneWidth, double sceneHeight) {

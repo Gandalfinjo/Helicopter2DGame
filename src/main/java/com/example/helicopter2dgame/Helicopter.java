@@ -16,13 +16,15 @@ import javafx.util.Duration;
 
 public class Helicopter extends Group {
     private Point2D direction;
-    private Rotate rotate;
+    private Rotate bodyRotation;
+    private Rotate rotorRotation;
     private Translate position;
     private double speed;
 
     private final Ellipse cockpit;
     private final Rectangle body;
     private final Rectangle tail;
+    private final Group upperBody;
     private final Rectangle rotorBlade1;
     private final Rectangle rotorBlade2;
     private final Rectangle rotorBlade3;
@@ -31,13 +33,11 @@ public class Helicopter extends Group {
 
     public Helicopter(double width, double height) {
         direction = new Point2D(0, -1);
-        rotate = new Rotate(0);
+        bodyRotation = new Rotate(0);
+        rotorRotation = new Rotate(0);
         position = new Translate();
 
-        super.getTransforms().addAll(
-                position,
-                rotate
-        );
+        super.getTransforms().add(position);
 
         double bodyWidth = 0.2 * width;
         double bodyHeight = height - width / 2;
@@ -59,6 +59,10 @@ public class Helicopter extends Group {
         tail.getTransforms().addAll(
                 new Translate(-tailWidth / 2, 2 * bodyHeight / 3)
         );
+
+        upperBody = new Group();
+        upperBody.getChildren().addAll(body, cockpit, tail);
+        upperBody.getTransforms().add(bodyRotation);
 
         rotorBlade1 = new Rectangle(bladeWidth, bladeHeight);
         rotorBlade1.setFill(Color.RED);
@@ -83,7 +87,6 @@ public class Helicopter extends Group {
 
         rotorBlades = new Group();
         rotorBlades.getChildren().addAll(rotorBlade1, rotorBlade2, rotorBlade3);
-        Rotate rotorRotation = new Rotate();
         rotorBlades.getTransforms().add(rotorRotation);
 
         rotorTimeline = new Timeline(
@@ -99,7 +102,8 @@ public class Helicopter extends Group {
         rotorTimeline.setCycleCount(Animation.INDEFINITE);
         rotorTimeline.play();
 
-        super.getChildren().addAll(body, cockpit, tail, rotorBlades);
+        //super.getChildren().addAll(body, cockpit, tail, rotorBlades);
+        super.getChildren().addAll(upperBody, rotorBlades);
     }
 
     private boolean isWallHit(double left, double right, double up, double down) {
@@ -125,12 +129,12 @@ public class Helicopter extends Group {
     }
 
     public void rotate(double dAngle, double left, double right, double up, double down) {
-        double oldAngle = rotate.getAngle();
+        double oldAngle = bodyRotation.getAngle();
         double newAngle = oldAngle + dAngle;
-        rotate.setAngle(newAngle);
+        bodyRotation.setAngle(newAngle);
 
         if (isWallHit(left, right, up, down)) {
-            rotate.setAngle(oldAngle);
+            bodyRotation.setAngle(oldAngle);
         } else {
             double magnitude = direction.magnitude();
             direction = new Point2D(

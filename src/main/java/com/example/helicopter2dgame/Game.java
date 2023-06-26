@@ -3,11 +3,15 @@ package com.example.helicopter2dgame;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 public class Game extends Application {
     private static final double WINDOW_WIDTH = 800;
@@ -31,9 +35,6 @@ public class Game extends Application {
         );
 
         Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT);
-        /*helicopter.getTransforms().addAll(
-                new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
-        );*/
 
         root.getChildren().addAll(packageGroup, helicopter);
         root.getTransforms().addAll(
@@ -58,14 +59,15 @@ public class Game extends Application {
             }
         });
 
-        MyTimer.IUpdatable helicopterWrapper = ds -> {
-            helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
-        };
+        MyTimer.IUpdatable helicopterWrapper = ds -> helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
 
         MyTimer myTimer = new MyTimer(helicopterWrapper);
         myTimer.start();
 
-        scene.setFill(Color.BEIGE);
+        Image image = new Image(Objects.requireNonNull(Game.class.getResourceAsStream("grass.jpg")));
+        ImagePattern imagePattern = new ImagePattern(image);
+
+        scene.setFill(imagePattern);
         stage.setTitle("Helicopter2DGame");
         stage.setScene(scene);
         stage.show();

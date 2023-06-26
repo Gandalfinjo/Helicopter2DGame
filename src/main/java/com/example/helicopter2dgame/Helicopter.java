@@ -102,7 +102,6 @@ public class Helicopter extends Group {
         rotorTimeline.setCycleCount(Animation.INDEFINITE);
         rotorTimeline.play();
 
-        //super.getChildren().addAll(body, cockpit, tail, rotorBlades);
         super.getChildren().addAll(upperBody, rotorBlades);
     }
 

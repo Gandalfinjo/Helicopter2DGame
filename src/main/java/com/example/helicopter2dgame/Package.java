@@ -1,5 +1,6 @@
 package com.example.helicopter2dgame;
 
+import javafx.geometry.Bounds;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -24,6 +25,10 @@ public class Package extends Rectangle {
         }
 
         return packages;
+    }
+
+    public boolean handleCollision(Bounds helicopterBounds) {
+        return super.getBoundsInParent().intersects(helicopterBounds);
     }
 
 }

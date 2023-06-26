@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -27,16 +26,16 @@ public class Game extends Application {
     public void start(Stage stage) {
         Group root = new Group();
 
-        Group packageGroup = new Group();
         Package[] packages = Package.generatePackages(5, WINDOW_WIDTH, WINDOW_HEIGHT);
-        packageGroup.getChildren().addAll(packages);
-        packageGroup.getTransforms().addAll(
-                new Translate(-WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2)
-        );
+
+        for (Package aPackage : packages) {
+            aPackage.getTransforms().add(new Translate(-WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2));
+        }
 
         Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT);
 
-        root.getChildren().addAll(packageGroup, helicopter);
+        root.getChildren().addAll(packages);
+        root.getChildren().addAll(helicopter);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );
@@ -59,7 +58,16 @@ public class Game extends Application {
             }
         });
 
-        MyTimer.IUpdatable helicopterWrapper = ds -> helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+        MyTimer.IUpdatable helicopterWrapper = ds -> {
+            helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+
+            for (int i = 0; i < packages.length; i++) {
+                if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {
+                    root.getChildren().remove (packages[i]);
+                    packages[i] = null;
+                }
+            }
+        };
 
         MyTimer myTimer = new MyTimer(helicopterWrapper);
         myTimer.start();

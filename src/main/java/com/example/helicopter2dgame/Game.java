@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Game extends Application {
     private static final double WINDOW_WIDTH = 800;
-    private static final double WINDOW_HEIGHT = 700;
+    private static final double WINDOW_HEIGHT = 800;
 
     private static final double HELICOPTER_WIDTH = 0.03 * WINDOW_WIDTH;
     private static final double HELICOPTER_HEIGHT = 0.07 * WINDOW_HEIGHT;

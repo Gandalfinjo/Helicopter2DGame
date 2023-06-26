@@ -107,7 +107,6 @@ public class Helicopter extends Group {
 
     private boolean isWallHit(double left, double right, double up, double down) {
         Bounds cockpitBounds = cockpit.localToScene(cockpit.getBoundsInLocal());
-        Bounds rotorBounds = rotorBlades.localToScene(rotorBlades.getBoundsInLocal());
         Bounds bodyBounds = body.localToScene(body.getBoundsInLocal());
 
         double cockpitMinX = cockpitBounds.getCenterX() - cockpit.getRadiusX();
@@ -124,7 +123,14 @@ public class Helicopter extends Group {
 
         boolean bodyWallHit = bodyMinX <= left || bodyMaxX >= right || bodyMinY <= up || bodyMaxY >= down;
 
-        return cockpitWallHit || bodyWallHit;
+        double rotorMinX = cockpitBounds.getCenterX() - rotorBlade1.getHeight();
+        double rotorMaxX = cockpitBounds.getCenterX() + rotorBlade1.getHeight();
+        double rotorMinY = cockpitBounds.getCenterY() - rotorBlade1.getHeight();
+        double rotorMaxY = cockpitBounds.getCenterY() + rotorBlade1.getHeight();
+
+        boolean rotorWallHit = rotorMinX <= left || rotorMaxX >= right || rotorMinY <= up || rotorMaxY >= down;
+
+        return cockpitWallHit || bodyWallHit || rotorWallHit;
     }
 
     public void rotate(double dAngle, double left, double right, double up, double down) {

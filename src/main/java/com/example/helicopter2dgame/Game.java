@@ -22,6 +22,9 @@ public class Game extends Application {
     private static final double HELICOPTER_DIRECTION_STEP = 5;
     private static final double HELICOPTER_DAMP = 0.995;
 
+    private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
+    private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
+
     @Override
     public void start(Stage stage) {
         Group root = new Group();
@@ -33,9 +36,13 @@ public class Game extends Application {
         }
 
         Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT);
+        Helipad helipad = new Helipad(HELIPAD_WIDTH, HELIPAD_HEIGHT);
+        helipad.getTransforms().addAll(
+                new Translate(-HELIPAD_WIDTH / 2, -HELIPAD_HEIGHT / 2)
+        );
 
         root.getChildren().addAll(packages);
-        root.getChildren().addAll(helicopter);
+        root.getChildren().addAll(helipad, helicopter);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );

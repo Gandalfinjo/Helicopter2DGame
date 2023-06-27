@@ -1,11 +1,14 @@
 package com.example.helicopter2dgame;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -41,8 +44,16 @@ public class Game extends Application {
                 new Translate(-HELIPAD_WIDTH / 2, -HELIPAD_HEIGHT / 2)
         );
 
+        Label timerLabel = new Label();
+        timerLabel.setTextFill(Color.BLACK);
+        timerLabel.setStyle("-fx-font-size: 20px");
+        timerLabel.getTransforms().addAll(
+                new Translate(-2 * WINDOW_WIDTH / 5, 2 * WINDOW_HEIGHT / 5)
+        );
+
         root.getChildren().addAll(packages);
         root.getChildren().addAll(helipad, helicopter);
+        root.getChildren().addAll(timerLabel);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );
@@ -86,6 +97,24 @@ public class Game extends Application {
         stage.setTitle("Helicopter2DGame");
         stage.setScene(scene);
         stage.show();
+
+        long startTime = System.currentTimeMillis();
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                long currentTime = System.currentTimeMillis();
+                long elapsedTime = currentTime - startTime;
+
+                long minutes = (elapsedTime / 1000) / 60;
+                long seconds = (elapsedTime / 1000) % 60;
+
+                String formattedTime = String.format("%02d:%02d", minutes, seconds);
+
+                timerLabel.setText(formattedTime);
+            }
+        };
+        timer.start();
     }
 
     public static void main(String[] args) {

@@ -16,8 +16,8 @@ import javafx.stage.Stage;
 import java.util.Objects;
 
 public class Game extends Application {
-    private static final double WINDOW_WIDTH = 800;
-    private static final double WINDOW_HEIGHT = 800;
+    private static final double WINDOW_WIDTH = 700;
+    private static final double WINDOW_HEIGHT = 700;
 
     private static final double HELICOPTER_WIDTH = 0.03 * WINDOW_WIDTH;
     private static final double HELICOPTER_HEIGHT = 0.07 * WINDOW_HEIGHT;
@@ -27,6 +27,8 @@ public class Game extends Application {
 
     private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
+
+    private boolean isRotorTimeline = false;
 
     @Override
     public void start(Stage stage) {
@@ -74,6 +76,12 @@ public class Game extends Application {
             else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
                 helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
             }
+
+            if (event.getCode().equals(KeyCode.SPACE)) {
+                if (!isRotorTimeline) helicopter.playRotorTimeline();
+                else helicopter.pauseRotorTimeline();
+                isRotorTimeline = !isRotorTimeline;
+            }
         });
 
         MyTimer.IUpdatable helicopterWrapper = ds -> {
@@ -81,7 +89,7 @@ public class Game extends Application {
 
             for (int i = 0; i < packages.length; i++) {
                 if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {
-                    root.getChildren().remove (packages[i]);
+                    root.getChildren().remove(packages[i]);
                     packages[i] = null;
                 }
             }

@@ -100,7 +100,7 @@ public class Helicopter extends Group {
                 )
         );
         rotorTimeline.setCycleCount(Animation.INDEFINITE);
-        rotorTimeline.play();
+        //rotorTimeline.play();
 
         super.getChildren().addAll(upperBody, rotorBlades);
     }
@@ -147,6 +147,14 @@ public class Helicopter extends Group {
                     -magnitude * Math.cos(Math.toRadians(newAngle))
             );
         }
+    }
+
+    public void playRotorTimeline() {
+        rotorTimeline.play();
+    }
+
+    public void pauseRotorTimeline() {
+        rotorTimeline.pause();
     }
 
     public void changeSpeed(double dSpeed) {

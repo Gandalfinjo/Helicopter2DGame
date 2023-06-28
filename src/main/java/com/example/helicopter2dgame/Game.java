@@ -24,9 +24,13 @@ public class Game extends Application {
     private static final double HELICOPTER_SPEED_STEP = 5;
     private static final double HELICOPTER_DIRECTION_STEP = 5;
     private static final double HELICOPTER_DAMP = 0.995;
+    private static final double HELICOPTER_MAX_SPEED = 200;
 
     private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
+
+    private static final double SPEEDOMETER_WIDTH = WINDOW_WIDTH / 75;
+    private static final double SPEEDOMETER_HEIGHT = 4 * WINDOW_HEIGHT / 5;
 
     private boolean isRotorTimeline = false;
     private double fuelLevel = 1.0;
@@ -47,6 +51,12 @@ public class Game extends Application {
                 new Translate(-HELIPAD_WIDTH / 2, -HELIPAD_HEIGHT / 2)
         );
 
+        Speedometer speedometer = new Speedometer(SPEEDOMETER_WIDTH, SPEEDOMETER_HEIGHT, HELICOPTER_MAX_SPEED);
+        speedometer.getTransforms().addAll(
+                new Translate(7 * WINDOW_WIDTH / 16, -SPEEDOMETER_HEIGHT / 2)
+        );
+
+
         Label timerLabel = new Label();
         timerLabel.setTextFill(Color.BLACK);
         timerLabel.setStyle("-fx-font-size: 20px");
@@ -63,6 +73,7 @@ public class Game extends Application {
         root.getChildren().addAll(helipad, helicopter);
         root.getChildren().addAll(timerLabel);
         root.getChildren().addAll(fuelIndicator);
+        root.getChildren().addAll(speedometer);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );
@@ -72,9 +83,11 @@ public class Game extends Application {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
                 helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
             }
             else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
                 helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
             }
 
             if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {

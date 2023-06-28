@@ -29,6 +29,7 @@ public class Game extends Application {
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
 
     private boolean isRotorTimeline = false;
+    private double fuelLevel = 1.0;
 
     @Override
     public void start(Stage stage) {
@@ -53,9 +54,15 @@ public class Game extends Application {
                 new Translate(-2 * WINDOW_WIDTH / 5, 2 * WINDOW_HEIGHT / 5)
         );
 
+        FuelIndicator fuelIndicator = new FuelIndicator();
+        fuelIndicator.getTransforms().addAll(
+                new Translate(-2 * WINDOW_WIDTH / 5, -2 * WINDOW_HEIGHT / 5)
+        );
+
         root.getChildren().addAll(packages);
         root.getChildren().addAll(helipad, helicopter);
         root.getChildren().addAll(timerLabel);
+        root.getChildren().addAll(fuelIndicator);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );
@@ -93,6 +100,13 @@ public class Game extends Application {
                     packages[i] = null;
                 }
             }
+
+            double speed = Math.abs(helicopter.getSpeed());
+            double fuelConsumptionRate = 0.00001;
+            double fuelConsumed = speed * fuelConsumptionRate;
+            fuelLevel -= fuelConsumed;
+
+            fuelIndicator.setFuelLevel(fuelLevel);
         };
 
         MyTimer myTimer = new MyTimer(helicopterWrapper);

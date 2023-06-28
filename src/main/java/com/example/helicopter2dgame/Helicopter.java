@@ -161,6 +161,10 @@ public class Helicopter extends Group {
         speed += dSpeed;
     }
 
+    public double getSpeed() {
+        return speed;
+    }
+
     public void update(double ds, double speedDamp, double left, double right, double up, double down) {
         double oldX = position.getX();
         double oldY = position.getY();

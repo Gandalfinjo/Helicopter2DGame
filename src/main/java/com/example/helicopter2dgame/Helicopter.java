@@ -14,6 +14,8 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
+import java.util.List;
+
 public class Helicopter extends Group {
     private Point2D direction;
     private Rotate bodyRotation;
@@ -133,12 +135,19 @@ public class Helicopter extends Group {
         return cockpitWallHit || bodyWallHit || rotorWallHit;
     }
 
-    public void rotate(double dAngle, double left, double right, double up, double down) {
+    private boolean isObstacleHit(WoodRectangle obstacle) {
+        Bounds helicopterBounds = getBoundsInParent();
+        Bounds obstacleBounds = obstacle.getBoundsInParent();
+
+        return helicopterBounds.intersects(obstacleBounds);
+    }
+
+    public void rotate(double dAngle, double left, double right, double up, double down, List<WoodRectangle> obstacles) {
         double oldAngle = bodyRotation.getAngle();
         double newAngle = oldAngle + dAngle;
         bodyRotation.setAngle(newAngle);
 
-        if (isWallHit(left, right, up, down)) {
+        if (isWallHit(left, right, up, down) || obstacles.stream().anyMatch(this::isObstacleHit)) {
             bodyRotation.setAngle(oldAngle);
         } else {
             double magnitude = direction.magnitude();
@@ -165,7 +174,7 @@ public class Helicopter extends Group {
         return speed;
     }
 
-    public void update(double ds, double speedDamp, double left, double right, double up, double down) {
+    public void update(double ds, double speedDamp, double left, double right, double up, double down, List<WoodRectangle> obstacles) {
         double oldX = position.getX();
         double oldY = position.getY();
 
@@ -175,7 +184,7 @@ public class Helicopter extends Group {
         position.setX(newX);
         position.setY(newY);
 
-        if (isWallHit(left, right, up, down)) {
+        if (isWallHit(left, right, up, down) || obstacles.stream().anyMatch(this::isObstacleHit)) {
             speed = 0;
             position.setX(oldX);
             position.setY(oldY);

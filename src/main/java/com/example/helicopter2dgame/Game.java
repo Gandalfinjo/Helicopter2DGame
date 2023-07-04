@@ -10,9 +10,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Game extends Application {
@@ -29,11 +32,16 @@ public class Game extends Application {
     private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
 
+    private static final double OBSTACLE_WIDTH = WINDOW_WIDTH / 70;
+    private static final double OBSTACLE_HEIGHT = WINDOW_HEIGHT / 4;
+
     private static final double SPEEDOMETER_WIDTH = WINDOW_WIDTH / 75;
     private static final double SPEEDOMETER_HEIGHT = 4 * WINDOW_HEIGHT / 5;
 
     private boolean isRotorTimeline = false;
     private double fuelLevel = 1.0;
+
+    private List<WoodRectangle> obstacles;
 
     @Override
     public void start(Stage stage) {
@@ -56,6 +64,33 @@ public class Game extends Application {
                 new Translate(7 * WINDOW_WIDTH / 16, -SPEEDOMETER_HEIGHT / 2)
         );
 
+        WoodRectangle obstacle1 = new WoodRectangle(OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        obstacle1.getTransforms().addAll(
+                new Translate(-WINDOW_WIDTH / 4 - OBSTACLE_WIDTH / 2, -OBSTACLE_HEIGHT / 2)
+        );
+        WoodRectangle obstacle2 = new WoodRectangle(OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        obstacle2.getTransforms().addAll(
+                new Translate(OBSTACLE_HEIGHT / 2, -WINDOW_WIDTH / 4),
+                new Rotate(90),
+                new Translate(-OBSTACLE_WIDTH / 2, 0)
+        );
+        WoodRectangle obstacle3 = new WoodRectangle(OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        obstacle3.getTransforms().addAll(
+                new Translate(-OBSTACLE_HEIGHT / 2, WINDOW_WIDTH / 4),
+                new Rotate(-90),
+                new Translate(-OBSTACLE_WIDTH / 2, 0)
+        );
+        WoodRectangle obstacle4 = new WoodRectangle(OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        obstacle4.getTransforms().addAll(
+                new Translate(WINDOW_WIDTH / 4 - OBSTACLE_WIDTH / 2, -OBSTACLE_HEIGHT / 2)
+        );
+
+        obstacles = new ArrayList<>(4);
+
+        obstacles.add(obstacle1);
+        obstacles.add(obstacle2);
+        obstacles.add(obstacle3);
+        obstacles.add(obstacle4);
 
         Label timerLabel = new Label();
         timerLabel.setTextFill(Color.BLACK);
@@ -74,6 +109,7 @@ public class Game extends Application {
         root.getChildren().addAll(timerLabel);
         root.getChildren().addAll(fuelIndicator);
         root.getChildren().addAll(speedometer);
+        root.getChildren().addAll(obstacle1, obstacle2, obstacle3, obstacle4);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
         );
@@ -91,10 +127,10 @@ public class Game extends Application {
             }
 
             if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
-                helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+                helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
             }
             else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
-                helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+                helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
             }
 
             if (event.getCode().equals(KeyCode.SPACE)) {
@@ -105,7 +141,7 @@ public class Game extends Application {
         });
 
         MyTimer.IUpdatable helicopterWrapper = ds -> {
-            helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT);
+            helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
 
             for (int i = 0; i < packages.length; i++) {
                 if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {

@@ -1,6 +1,9 @@
 package com.example.helicopter2dgame;
 
+import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -13,6 +16,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +42,14 @@ public class Game extends Application {
     private static final double SPEEDOMETER_WIDTH = WINDOW_WIDTH / 75;
     private static final double SPEEDOMETER_HEIGHT = 4 * WINDOW_HEIGHT / 5;
 
+    private static final double MILLIS_TO_SECONDS = 1000.0;
+    private static final double FUEL_CONSUMPTION_RATE = 0.000005;
+
     private boolean isRotorTimeline = false;
     private double fuelLevel = 1.0;
+
+    private Timeline timer;
+    private long lastUpdateTime = System.currentTimeMillis();
 
     private List<WoodRectangle> obstacles;
 
@@ -119,10 +129,12 @@ public class Game extends Application {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
                 helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
                 speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
             }
             else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
                 helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
                 speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
             }
 
@@ -140,8 +152,16 @@ public class Game extends Application {
             }
         });
 
-        MyTimer.IUpdatable helicopterWrapper = ds -> {
-            helicopter.update(ds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+        timer = new Timeline(new KeyFrame(Duration.millis(16), event -> {
+            long currentTime = System.currentTimeMillis();
+            double elapsedSeconds = (currentTime - lastUpdateTime) / MILLIS_TO_SECONDS;
+
+            if (fuelLevel <= 0) {
+                timer.stop();
+                return;
+            }
+
+            helicopter.update(elapsedSeconds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
 
             for (int i = 0; i < packages.length; i++) {
                 if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {
@@ -151,15 +171,16 @@ public class Game extends Application {
             }
 
             double speed = Math.abs(helicopter.getSpeed());
-            double fuelConsumptionRate = 0.00001;
-            double fuelConsumed = speed * fuelConsumptionRate;
+            double fuelConsumed = speed * FUEL_CONSUMPTION_RATE;
             fuelLevel -= fuelConsumed;
 
             fuelIndicator.setFuelLevel(fuelLevel);
-        };
 
-        MyTimer myTimer = new MyTimer(helicopterWrapper);
-        myTimer.start();
+            lastUpdateTime = currentTime;
+        }));
+
+        timer.setCycleCount(Animation.INDEFINITE);
+        timer.play();
 
         Image image = new Image(Objects.requireNonNull(Game.class.getResourceAsStream("grass.jpg")));
         ImagePattern imagePattern = new ImagePattern(image);

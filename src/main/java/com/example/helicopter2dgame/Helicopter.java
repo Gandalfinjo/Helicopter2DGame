@@ -170,6 +170,8 @@ public class Helicopter extends Group {
         speed += dSpeed;
     }
 
+    public void setSpeed(double dSpeed) { speed = dSpeed; }
+
     public double getSpeed() {
         return speed;
     }

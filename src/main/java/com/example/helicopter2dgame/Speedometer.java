@@ -11,9 +11,11 @@ public class Speedometer extends Group {
     private Circle speedIndicator;
 
     private double maxSpeed;
+    private double currentSpeed;
     private double speedIndicatorOffset;
 
     public Speedometer(double width, double height, double maxSpeed) {
+        this.currentSpeed = 0.0;
         this.maxSpeed = maxSpeed;
 
         speedometer = new Rectangle(width, height);
@@ -41,11 +43,19 @@ public class Speedometer extends Group {
                 new Translate(0, indicatorPositionOffset)
         );*/
 
-        double limitedSpeed = Math.max(-maxSpeed, Math.min(maxSpeed, helicopter.getSpeed() + dSpeed));
+        currentSpeed += dSpeed;
+        if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
+        else if (currentSpeed < -maxSpeed) currentSpeed = -maxSpeed;
+
+        double normalizedSpeed = currentSpeed / maxSpeed;
+        double indicatorY = (1 - normalizedSpeed) * (speedometer.getHeight() - speedIndicator.getRadius() * 2);
+        speedIndicator.setCenterY(indicatorY + speedIndicator.getRadius());
+
+        /*double limitedSpeed = Math.max(-maxSpeed, Math.min(maxSpeed, helicopter.getSpeed() + dSpeed));
         double indicatorPositionOffset = -limitedSpeed / maxSpeed * (speedometer.getHeight() / 2);
 
         speedIndicator.getTransforms().addAll(
                 new Translate(0, indicatorPositionOffset)
-        );
+        );*/
     }
 }

@@ -173,7 +173,6 @@ public class Game extends Application {
             double speed = Math.abs(helicopter.getSpeed());
             double fuelConsumed = speed * FUEL_CONSUMPTION_RATE;
             fuelLevel -= fuelConsumed;
-
             fuelIndicator.setFuelLevel(fuelLevel);
 
             lastUpdateTime = currentTime;

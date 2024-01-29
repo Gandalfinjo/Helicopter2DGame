@@ -127,22 +127,24 @@ public class Game extends Application {
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
-                helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
-                if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
-                speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
-            }
-            else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
-                helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
-                if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
-                speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
-            }
+            if (helicopter.isCanStart()) {
+                if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
+                    helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                    if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
+                    speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
+                }
+                else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
+                    helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                    if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
+                    speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
+                }
 
-            if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
-                helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
-            }
-            else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
-                helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
+                    helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                }
+                else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
+                    helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                }
             }
 
             if (event.getCode().equals(KeyCode.SPACE)) {

@@ -22,6 +22,7 @@ public class Helicopter extends Group {
     private Rotate rotorRotation;
     private Translate position;
     private double speed;
+    private boolean canStart;
 
     private final Ellipse cockpit;
     private final Rectangle body;
@@ -33,11 +34,20 @@ public class Helicopter extends Group {
     private final Group rotorBlades;
     private final Timeline rotorTimeline;
 
+    public boolean isCanStart() {
+        return canStart;
+    }
+
+    public void setCanStart(boolean canStart) {
+        this.canStart = canStart;
+    }
+
     public Helicopter(double width, double height) {
         direction = new Point2D(0, -1);
         bodyRotation = new Rotate(0);
         rotorRotation = new Rotate(0);
         position = new Translate();
+        canStart = false;
 
         super.getTransforms().add(position);
 
@@ -159,10 +169,13 @@ public class Helicopter extends Group {
     }
 
     public void playRotorTimeline() {
+        canStart = true;
         rotorTimeline.play();
     }
 
     public void pauseRotorTimeline() {
+        canStart = false;
+        speed = 0;
         rotorTimeline.pause();
     }
 

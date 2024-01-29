@@ -10,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -38,6 +39,12 @@ public class Game extends Application {
 
     private static final double SPEEDOMETER_WIDTH = WINDOW_WIDTH / 75;
     private static final double SPEEDOMETER_HEIGHT = 4 * WINDOW_HEIGHT / 5;
+
+    private static final double HEIGHT_INDICATOR_WIDTH = WINDOW_WIDTH / 200;
+    private static final double HEIGHT_INDICATOR_HEIGHT = 4 * WINDOW_HEIGHT / 5;
+
+    private Timeline heightTimeline;
+    private Timeline reverseHeightTimeline;
 
     private static final double MILLIS_TO_SECONDS = 1000.0;
     private static final double FUEL_CONSUMPTION_RATE = 0.000005;
@@ -69,6 +76,34 @@ public class Game extends Application {
         Speedometer speedometer = new Speedometer(SPEEDOMETER_WIDTH, SPEEDOMETER_HEIGHT, HELICOPTER_MAX_SPEED);
         speedometer.getTransforms().addAll(
                 new Translate(7 * WINDOW_WIDTH / 16, -SPEEDOMETER_HEIGHT / 2)
+        );
+
+        Rectangle heightIndicator = new Rectangle(HEIGHT_INDICATOR_WIDTH, 0, Color.CADETBLUE);
+        heightIndicator.getTransforms().addAll(
+                new Translate(-7 * WINDOW_WIDTH / 16, SPEEDOMETER_HEIGHT / 2),
+                new Rotate(180)
+        );
+
+        heightTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(heightIndicator.heightProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.seconds(2),
+                        new KeyValue(heightIndicator.heightProperty(), HEIGHT_INDICATOR_HEIGHT)
+                )
+        );
+
+        reverseHeightTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(heightIndicator.heightProperty(), HEIGHT_INDICATOR_HEIGHT)
+                ),
+                new KeyFrame(
+                        Duration.seconds(2),
+                        new KeyValue(heightIndicator.heightProperty(), 0)
+                )
         );
 
         WoodRectangle obstacle1 = new WoodRectangle(OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
@@ -116,6 +151,7 @@ public class Game extends Application {
         root.getChildren().addAll(timerLabel);
         root.getChildren().addAll(fuelIndicator);
         root.getChildren().addAll(speedometer);
+        root.getChildren().addAll(heightIndicator);
         root.getChildren().addAll(obstacle1, obstacle2, obstacle3, obstacle4);
         root.getTransforms().addAll(
                 new Translate(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
@@ -148,10 +184,12 @@ public class Game extends Application {
                 if (!isRotorTimeline) {
                     helicopter.playRotorTimeline();
                     helicopter.playScaleTimeline();
+                    heightTimeline.play();
                 }
                 else {
                     helicopter.pauseRotorTimeline();
                     helicopter.reverseScaleTimeline();
+                    reverseHeightTimeline.play();
                 }
                 isRotorTimeline = !isRotorTimeline;
             }

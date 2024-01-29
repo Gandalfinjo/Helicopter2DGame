@@ -128,9 +128,7 @@ public class Helicopter extends Group {
                         new KeyValue(scale.yProperty(), 1)
                 )
         );
-        scaleTimeline.setOnFinished(e -> {
-            canStart = true;
-        });
+        scaleTimeline.setOnFinished(e -> canStart = true);
 
         reverseTimeline = new Timeline(
                 new KeyFrame(

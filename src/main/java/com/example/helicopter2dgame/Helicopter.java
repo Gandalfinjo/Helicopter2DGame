@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
@@ -21,6 +22,7 @@ public class Helicopter extends Group {
     private Rotate bodyRotation;
     private Rotate rotorRotation;
     private Translate position;
+    private Scale scale;
     private double speed;
     private boolean canStart;
 
@@ -33,19 +35,18 @@ public class Helicopter extends Group {
     private final Rectangle rotorBlade3;
     private final Group rotorBlades;
     private final Timeline rotorTimeline;
+    private final Timeline scaleTimeline;
+    private final Timeline reverseTimeline;
 
     public boolean isCanStart() {
         return canStart;
-    }
-
-    public void setCanStart(boolean canStart) {
-        this.canStart = canStart;
     }
 
     public Helicopter(double width, double height) {
         direction = new Point2D(0, -1);
         bodyRotation = new Rotate(0);
         rotorRotation = new Rotate(0);
+        scale = new Scale(0.7, 0.7);
         position = new Translate();
         canStart = false;
 
@@ -112,7 +113,37 @@ public class Helicopter extends Group {
                 )
         );
         rotorTimeline.setCycleCount(Animation.INDEFINITE);
-        //rotorTimeline.play();
+
+        super.getTransforms().addAll(scale);
+
+        scaleTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(scale.xProperty(), 0.7),
+                        new KeyValue(scale.yProperty(), 0.7)
+                ),
+                new KeyFrame(
+                        Duration.seconds(2),
+                        new KeyValue(scale.xProperty(), 1),
+                        new KeyValue(scale.yProperty(), 1)
+                )
+        );
+        scaleTimeline.setOnFinished(e -> {
+            canStart = true;
+        });
+
+        reverseTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(scale.xProperty(), 1),
+                        new KeyValue(scale.yProperty(), 1)
+                ),
+                new KeyFrame(
+                        Duration.seconds(2),
+                        new KeyValue(scale.xProperty(), 0.7),
+                        new KeyValue(scale.yProperty(), 0.7)
+                )
+        );
 
         super.getChildren().addAll(upperBody, rotorBlades);
     }
@@ -169,7 +200,6 @@ public class Helicopter extends Group {
     }
 
     public void playRotorTimeline() {
-        canStart = true;
         rotorTimeline.play();
     }
 
@@ -177,6 +207,14 @@ public class Helicopter extends Group {
         canStart = false;
         speed = 0;
         rotorTimeline.pause();
+    }
+
+    public void playScaleTimeline() {
+        scaleTimeline.play();
+    }
+
+    public void reverseScaleTimeline() {
+        reverseTimeline.play();
     }
 
     public void changeSpeed(double dSpeed) {

@@ -1,9 +1,6 @@
 package com.example.helicopter2dgame;
 
-import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -148,8 +145,14 @@ public class Game extends Application {
             }
 
             if (event.getCode().equals(KeyCode.SPACE)) {
-                if (!isRotorTimeline) helicopter.playRotorTimeline();
-                else helicopter.pauseRotorTimeline();
+                if (!isRotorTimeline) {
+                    helicopter.playRotorTimeline();
+                    helicopter.playScaleTimeline();
+                }
+                else {
+                    helicopter.pauseRotorTimeline();
+                    helicopter.reverseScaleTimeline();
+                }
                 isRotorTimeline = !isRotorTimeline;
             }
         });

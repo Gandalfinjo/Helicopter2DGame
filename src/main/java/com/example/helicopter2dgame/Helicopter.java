@@ -142,6 +142,7 @@ public class Helicopter extends Group {
                         new KeyValue(scale.yProperty(), 0.7)
                 )
         );
+        reverseTimeline.setOnFinished(e -> pauseRotorTimeline());
 
         super.getChildren().addAll(upperBody, rotorBlades);
     }
@@ -202,8 +203,6 @@ public class Helicopter extends Group {
     }
 
     public void pauseRotorTimeline() {
-        canStart = false;
-        speed = 0;
         rotorTimeline.pause();
     }
 
@@ -212,6 +211,8 @@ public class Helicopter extends Group {
     }
 
     public void reverseScaleTimeline() {
+        canStart = false;
+        speed = 0;
         reverseTimeline.play();
     }
 

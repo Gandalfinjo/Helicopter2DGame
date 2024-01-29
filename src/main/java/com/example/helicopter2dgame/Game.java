@@ -187,7 +187,6 @@ public class Game extends Application {
                     heightTimeline.play();
                 }
                 else {
-                    helicopter.pauseRotorTimeline();
                     helicopter.reverseScaleTimeline();
                     reverseHeightTimeline.play();
                 }

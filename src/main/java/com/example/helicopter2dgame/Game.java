@@ -164,12 +164,12 @@ public class Game extends Application {
                 if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
                     helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
                     if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
-                    speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
+                    //speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
                 }
                 else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
                     helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
                     if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
-                    speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
+                    //speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
                 }
 
                 if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
@@ -200,10 +200,14 @@ public class Game extends Application {
 
             if (fuelLevel <= 0) {
                 timer.stop();
+                helicopter.reverseScaleTimeline();
+                reverseHeightTimeline.play();
+                speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
                 return;
             }
 
             helicopter.update(elapsedSeconds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+            speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
 
             for (int i = 0; i < packages.length; i++) {
                 if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {

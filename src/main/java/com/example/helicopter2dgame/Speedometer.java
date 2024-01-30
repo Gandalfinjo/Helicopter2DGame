@@ -43,13 +43,19 @@ public class Speedometer extends Group {
                 new Translate(0, indicatorPositionOffset)
         );*/
 
-        currentSpeed += dSpeed;
+        currentSpeed = dSpeed;
         if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
         else if (currentSpeed < -maxSpeed) currentSpeed = -maxSpeed;
 
-        double normalizedSpeed = currentSpeed / maxSpeed;
-        double indicatorY = (1 - normalizedSpeed) * (speedometer.getHeight() - speedIndicator.getRadius() * 2);
-        speedIndicator.setCenterY(indicatorY + speedIndicator.getRadius());
+        double normalizedSpeed = (currentSpeed + maxSpeed) / (maxSpeed + maxSpeed);
+        double yPos = (1 - normalizedSpeed) * (speedometer.getHeight()) - speedometer.getHeight() / 2;
+        if (yPos == -speedometer.getHeight() / 2) yPos += speedIndicator.getRadius();
+        else if (yPos == speedometer.getHeight() / 2) yPos -= speedIndicator.getRadius();
+        speedIndicator.setTranslateY(yPos);
+
+//        double normalizedSpeed = currentSpeed / maxSpeed;
+//        double indicatorY = (1 - normalizedSpeed) * (speedometer.getHeight() - speedIndicator.getRadius() * 2);
+//        speedIndicator.setCenterY(indicatorY + speedIndicator.getRadius());
 
         /*double limitedSpeed = Math.max(-maxSpeed, Math.min(maxSpeed, helicopter.getSpeed() + dSpeed));
         double indicatorPositionOffset = -limitedSpeed / maxSpeed * (speedometer.getHeight() / 2);

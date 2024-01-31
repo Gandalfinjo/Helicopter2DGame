@@ -37,6 +37,7 @@ public class Helicopter extends Group {
     private final Timeline rotorTimeline;
     private final Timeline scaleTimeline;
     private final Timeline reverseTimeline;
+    private final Timeline underWaterTimeline;
 
     public boolean isCanStart() {
         return canStart;
@@ -144,6 +145,19 @@ public class Helicopter extends Group {
         );
         reverseTimeline.setOnFinished(e -> pauseRotorTimeline());
 
+        underWaterTimeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(scale.xProperty(), 1),
+                        new KeyValue(scale.yProperty(), 1)
+                ),
+                new KeyFrame(
+                        Duration.seconds(2),
+                        new KeyValue(scale.xProperty(), 0),
+                        new KeyValue(scale.yProperty(), 0)
+                )
+        );
+
         super.getChildren().addAll(upperBody, rotorBlades);
     }
 
@@ -182,6 +196,36 @@ public class Helicopter extends Group {
         return helicopterBounds.intersects(obstacleBounds);
     }
 
+    public boolean isInsideWater(Water water) {
+        Bounds helicopterBounds = getBoundsInParent();
+        Bounds waterBounds = water.getBoundsInParent();
+
+        double intersectionWidth = Math.min(helicopterBounds.getMaxX(), waterBounds.getMaxX()) - Math.max(helicopterBounds.getMinX(), waterBounds.getMinX());
+        double intersectionHeight = Math.min(helicopterBounds.getMaxY(), waterBounds.getMaxY()) - Math.max(helicopterBounds.getMinY(), waterBounds.getMinY());
+
+        double intersectionArea = Math.max(0, intersectionWidth) * Math.max(0, intersectionHeight);
+        double helicopterArea = helicopterBounds.getWidth() * helicopterBounds.getHeight();
+
+        double overlapPercentage = intersectionArea / helicopterArea;
+
+        return overlapPercentage > 0.5;
+    }
+
+    public boolean isOnSpecialHelipad(SpecialHelipad specialHelipad) {
+        Bounds helicopterBounds = getBoundsInParent();
+        Bounds helipadBounds = specialHelipad.getBoundsInParent();
+
+        double intersectionWidth = Math.min(helicopterBounds.getMaxX(), helipadBounds.getMaxX()) - Math.max(helicopterBounds.getMinX(), helipadBounds.getMinX());
+        double intersectionHeight = Math.min(helicopterBounds.getMaxY(), helipadBounds.getMaxY()) - Math.max(helicopterBounds.getMinY(), helipadBounds.getMinY());
+
+        double intersectionArea = Math.max(0, intersectionWidth) * Math.max(0, intersectionHeight);
+        double helicopterArea = helicopterBounds.getWidth() * helicopterBounds.getHeight();
+
+        double overlapPercentage = intersectionArea / helicopterArea;
+
+        return overlapPercentage > 0.5;
+    }
+
     public void rotate(double dAngle, double left, double right, double up, double down, List<WoodRectangle> obstacles) {
         double oldAngle = bodyRotation.getAngle();
         double newAngle = oldAngle + dAngle;
@@ -214,6 +258,16 @@ public class Helicopter extends Group {
         canStart = false;
         speed = 0;
         reverseTimeline.play();
+    }
+
+    public void underWaterTimeline() {
+        canStart = false;
+        speed = 0;
+        underWaterTimeline.play();
+    }
+
+    public boolean isOnTheGround() {
+        return scale.getX() == 0.7;
     }
 
     public void changeSpeed(double dSpeed) {

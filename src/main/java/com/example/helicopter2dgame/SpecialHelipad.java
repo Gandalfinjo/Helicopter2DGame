@@ -6,8 +6,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
 
 public class SpecialHelipad extends Helipad {
+    private final Group plus;
+    private boolean hasPlus;
+
     public SpecialHelipad(double width, double height) {
         super(width, height);
+
+        hasPlus = true;
 
         Rectangle plus1 = new Rectangle(STROKE_WIDTH, height / 4);
         plus1.setFill(Color.GREEN);
@@ -21,10 +26,22 @@ public class SpecialHelipad extends Helipad {
                 new Translate(3 * width / 8, height / 2 - STROKE_WIDTH / 2)
         );
 
-        Group plus = new Group();
+        plus = new Group();
         plus.getChildren().addAll(plus1, plus2);
 
         super.getChildren().addAll(plus);
+    }
+
+    public void removePlus() {
+        super.getChildren().remove(plus);
+    }
+
+    public boolean getHasPlus() {
+        return hasPlus;
+    }
+
+    public void setHasPlus(boolean hasPlus) {
+        this.hasPlus = hasPlus;
     }
 
 //    public boolean isHelicopterInside(Helicopter helicopter) {

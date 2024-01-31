@@ -195,6 +195,9 @@ public class Game extends Application {
                 new Translate(-2 * WINDOW_WIDTH / 5, -2 * WINDOW_HEIGHT / 5)
         );
 
+        Label resultLabel = new Label();
+        resultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
         root.getChildren().addAll(water);
         root.getChildren().addAll(packages);
         root.getChildren().addAll(helipad, specialHelipad1, specialHelipad2, helicopter);
@@ -237,8 +240,19 @@ public class Game extends Application {
                     heightTimeline.play();
                 }
                 else {
-                    helicopter.reverseScaleTimeline();
-                    reverseHeightTimeline.play();
+                    if (helicopter.isInsideWater(water)) {
+                        timer.stop();
+                        helicopter.underWaterTimeline();
+                        reverseHeightTimeline.play();
+                        speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+
+                        resultLabel.setText("Game Over");
+                        endGameStage.show();
+                    }
+                    else {
+                        helicopter.reverseScaleTimeline();
+                        reverseHeightTimeline.play();
+                    }
                 }
                 isRotorTimeline = !isRotorTimeline;
             }
@@ -252,9 +266,6 @@ public class Game extends Application {
         GridPane modalPane = new GridPane();
         modalPane.setVgap(10);
 
-        Label resultLabel = new Label();
-        resultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
         modalPane.add(resultLabel, 0, 0);
 
         GridPane.setHalignment(resultLabel, HPos.CENTER);
@@ -265,6 +276,20 @@ public class Game extends Application {
         timer = new Timeline(new KeyFrame(Duration.millis(16), event -> {
             long currentTime = System.currentTimeMillis();
             double elapsedSeconds = (currentTime - lastUpdateTime) / MILLIS_TO_SECONDS;
+
+            if (helicopter.isOnSpecialHelipad(specialHelipad1) && specialHelipad1.getHasPlus() && helicopter.isOnTheGround()) {
+                fuelLevel = 1.0;
+                fuelIndicator.setFuelLevel(fuelLevel);
+                specialHelipad1.removePlus();
+                specialHelipad1.setHasPlus(false);
+            }
+
+            if (helicopter.isOnSpecialHelipad(specialHelipad2) && specialHelipad2.getHasPlus() && helicopter.isOnTheGround()) {
+                fuelLevel = 1.0;
+                fuelIndicator.setFuelLevel(fuelLevel);
+                specialHelipad2.removePlus();
+                specialHelipad2.setHasPlus(false);
+            }
 
             if (fuelLevel <= 0) {
                 timer.stop();

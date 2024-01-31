@@ -38,8 +38,13 @@ public class Game extends Application {
     private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
 
+    private static final double PACKAGE_SIZE = 20;
+
     private static final double OBSTACLE_WIDTH = WINDOW_WIDTH / 70;
     private static final double OBSTACLE_HEIGHT = WINDOW_HEIGHT / 4;
+
+    private static final double WATER_WIDTH = 0.15 * WINDOW_WIDTH;
+    private static final double WATER_HEIGHT = 0.15 * WINDOW_HEIGHT;
 
     private static final double SPEEDOMETER_WIDTH = WINDOW_WIDTH / 75;
     private static final double SPEEDOMETER_HEIGHT = 4 * WINDOW_HEIGHT / 5;
@@ -67,16 +72,49 @@ public class Game extends Application {
     public void start(Stage stage) {
         Group root = new Group();
 
-        Package[] packages = Package.generatePackages(5, WINDOW_WIDTH, WINDOW_HEIGHT);
+//        Package[] packages = Package.generatePackages(5, WINDOW_WIDTH, WINDOW_HEIGHT);
+//
+//        for (Package aPackage : packages) {
+//            aPackage.getTransforms().add(new Translate(-WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2));
+//        }
 
-        for (Package aPackage : packages) {
-            aPackage.getTransforms().add(new Translate(-WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2));
-        }
+        Translate package0Position = new Translate (
+                -PACKAGE_SIZE / 2 + WINDOW_WIDTH / 3,
+                -PACKAGE_SIZE / 2 - WINDOW_HEIGHT / 3
+        );
+        Translate package1Position = new Translate (
+                -PACKAGE_SIZE / 2 - WINDOW_WIDTH / 3,
+                -PACKAGE_SIZE / 2 - WINDOW_HEIGHT / 3
+        );
+        Translate package2Position = new Translate (
+                -PACKAGE_SIZE / 2 + WINDOW_WIDTH / 3,
+                PACKAGE_SIZE / 2 + WINDOW_HEIGHT / 3
+        );
+        Translate package3Position = new Translate (
+                -PACKAGE_SIZE / 2 - WINDOW_WIDTH / 3,
+                PACKAGE_SIZE / 2 + WINDOW_HEIGHT / 3
+        );
+        Package[] packages = {
+                new Package (PACKAGE_SIZE, package0Position),
+                new Package (PACKAGE_SIZE, package1Position),
+                new Package (PACKAGE_SIZE, package2Position),
+                new Package (PACKAGE_SIZE, package3Position)
+        };
 
         Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT);
         Helipad helipad = new Helipad(HELIPAD_WIDTH, HELIPAD_HEIGHT);
         helipad.getTransforms().addAll(
                 new Translate(-HELIPAD_WIDTH / 2, -HELIPAD_HEIGHT / 2)
+        );
+
+        SpecialHelipad specialHelipad1 = new SpecialHelipad(HELIPAD_WIDTH, HELIPAD_HEIGHT);
+        specialHelipad1.getTransforms().addAll(
+                new Translate(-HELIPAD_WIDTH / 2, -3 * WINDOW_HEIGHT / 7)
+        );
+
+        SpecialHelipad specialHelipad2 = new SpecialHelipad(HELIPAD_WIDTH, HELIPAD_HEIGHT);
+        specialHelipad2.getTransforms().addAll(
+                new Translate(-HELIPAD_WIDTH / 2, 3 * WINDOW_HEIGHT / 7 - HELIPAD_HEIGHT)
         );
 
         Speedometer speedometer = new Speedometer(SPEEDOMETER_WIDTH, SPEEDOMETER_HEIGHT, HELICOPTER_MAX_SPEED);
@@ -140,6 +178,11 @@ public class Game extends Application {
         obstacles.add(obstacle3);
         obstacles.add(obstacle4);
 
+        Water water = new Water(WATER_WIDTH, WATER_HEIGHT);
+        water.getTransforms().addAll(
+                new Translate(- 3 * WINDOW_WIDTH / 7, -WATER_HEIGHT / 2)
+        );
+
         Label timerLabel = new Label();
         timerLabel.setTextFill(Color.BLACK);
         timerLabel.setStyle("-fx-font-size: 20px");
@@ -152,8 +195,9 @@ public class Game extends Application {
                 new Translate(-2 * WINDOW_WIDTH / 5, -2 * WINDOW_HEIGHT / 5)
         );
 
+        root.getChildren().addAll(water);
         root.getChildren().addAll(packages);
-        root.getChildren().addAll(helipad, helicopter);
+        root.getChildren().addAll(helipad, specialHelipad1, specialHelipad2, helicopter);
         root.getChildren().addAll(timerLabel);
         root.getChildren().addAll(fuelIndicator);
         root.getChildren().addAll(speedometer);
@@ -254,9 +298,6 @@ public class Game extends Application {
 
             if (allPackagesCollected) {
                 timer.stop();
-                helicopter.reverseScaleTimeline();
-                reverseHeightTimeline.play();
-                speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
 
                 resultLabel.setText("You Won!");
                 endGameStage.show();

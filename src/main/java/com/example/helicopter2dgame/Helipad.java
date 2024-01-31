@@ -8,7 +8,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 
 public class Helipad extends Group {
-    private final static double STROKE_WIDTH = 3;
+    protected final static double STROKE_WIDTH = 3;
 
     public Helipad(double width, double height) {
         Rectangle helipad = new Rectangle(width, height);

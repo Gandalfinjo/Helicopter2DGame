@@ -2,18 +2,22 @@ package com.example.helicopter2dgame;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.geometry.HPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -56,6 +60,8 @@ public class Game extends Application {
     private long lastUpdateTime = System.currentTimeMillis();
 
     private List<WoodRectangle> obstacles;
+
+    private Stage endGameStage;
 
     @Override
     public void start(Stage stage) {
@@ -194,6 +200,24 @@ public class Game extends Application {
             }
         });
 
+        endGameStage = new Stage();
+        endGameStage.initStyle(StageStyle.UTILITY);
+        endGameStage.initModality(Modality.APPLICATION_MODAL);
+        endGameStage.setTitle("Helicopter2DGame Ended");
+
+        GridPane modalPane = new GridPane();
+        modalPane.setVgap(10);
+
+        Label resultLabel = new Label();
+        resultLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        modalPane.add(resultLabel, 0, 0);
+
+        GridPane.setHalignment(resultLabel, HPos.CENTER);
+
+        Scene endGameScene = new Scene(modalPane, 200, 100);
+        endGameStage.setScene(endGameScene);
+
         timer = new Timeline(new KeyFrame(Duration.millis(16), event -> {
             long currentTime = System.currentTimeMillis();
             double elapsedSeconds = (currentTime - lastUpdateTime) / MILLIS_TO_SECONDS;
@@ -203,6 +227,10 @@ public class Game extends Application {
                 helicopter.reverseScaleTimeline();
                 reverseHeightTimeline.play();
                 speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+
+                resultLabel.setText("Game Over");
+                endGameStage.show();
+
                 return;
             }
 
@@ -214,6 +242,26 @@ public class Game extends Application {
                     root.getChildren().remove(packages[i]);
                     packages[i] = null;
                 }
+            }
+
+            boolean allPackagesCollected = true;
+            for (Package aPackage : packages) {
+                if (aPackage != null) {
+                    allPackagesCollected = false;
+                    break;
+                }
+            }
+
+            if (allPackagesCollected) {
+                timer.stop();
+                helicopter.reverseScaleTimeline();
+                reverseHeightTimeline.play();
+                speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+
+                resultLabel.setText("You Won!");
+                endGameStage.show();
+
+                return;
             }
 
             double speed = Math.abs(helicopter.getSpeed());

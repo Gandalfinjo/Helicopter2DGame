@@ -12,7 +12,6 @@ public class Speedometer extends Group {
 
     private double maxSpeed;
     private double currentSpeed;
-    private double speedIndicatorOffset;
 
     public Speedometer(double width, double height, double maxSpeed) {
         this.currentSpeed = 0.0;
@@ -30,18 +29,10 @@ public class Speedometer extends Group {
                 new Translate(indicatorRadius, height / 2)
         );
 
-        speedIndicatorOffset = (height - 2 * indicatorRadius) / 2;
-
         super.getChildren().addAll(speedometer, speedIndicator);
     }
 
-    public void changeSpeed(double dSpeed, Helicopter helicopter) {
-        /*double indicatorPosition = helicopter.getSpeed() + dSpeed / maxSpeed * speedIndicatorOffset;
-        double indicatorPositionOffset = -indicatorPosition / speedometer.getHeight() * speedometer.getHeight();
-
-        speedIndicator.getTransforms().addAll(
-                new Translate(0, indicatorPositionOffset)
-        );*/
+    public void changeSpeed(double dSpeed) {
 
         currentSpeed = dSpeed;
         if (currentSpeed > maxSpeed) currentSpeed = maxSpeed;
@@ -52,16 +43,5 @@ public class Speedometer extends Group {
         if (yPos == -speedometer.getHeight() / 2) yPos += speedIndicator.getRadius();
         else if (yPos == speedometer.getHeight() / 2) yPos -= speedIndicator.getRadius();
         speedIndicator.setTranslateY(yPos);
-
-//        double normalizedSpeed = currentSpeed / maxSpeed;
-//        double indicatorY = (1 - normalizedSpeed) * (speedometer.getHeight() - speedIndicator.getRadius() * 2);
-//        speedIndicator.setCenterY(indicatorY + speedIndicator.getRadius());
-
-        /*double limitedSpeed = Math.max(-maxSpeed, Math.min(maxSpeed, helicopter.getSpeed() + dSpeed));
-        double indicatorPositionOffset = -limitedSpeed / maxSpeed * (speedometer.getHeight() / 2);
-
-        speedIndicator.getTransforms().addAll(
-                new Translate(0, indicatorPositionOffset)
-        );*/
     }
 }

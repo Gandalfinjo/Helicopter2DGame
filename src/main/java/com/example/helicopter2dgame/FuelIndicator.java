@@ -9,17 +9,11 @@ public class FuelIndicator extends Group {
     private static final double INDICATOR_RADIUS = 50;
     private static final double INDICATOR_WIDTH = 5;
 
-    //private Arc indicatorArc;
     private Arc redArc;
     private Arc blackArc;
     private Line pointerLine;
 
     public FuelIndicator() {
-        /*indicatorArc = new Arc(INDICATOR_RADIUS, INDICATOR_RADIUS, INDICATOR_RADIUS, INDICATOR_RADIUS, -180, 180);
-        indicatorArc.setFill(Color.TRANSPARENT);
-        indicatorArc.setStroke(Color.BLACK);
-        indicatorArc.setStrokeWidth(INDICATOR_WIDTH);
-        indicatorArc.setStartAngle(0);*/
 
         redArc = new Arc(INDICATOR_RADIUS, INDICATOR_RADIUS, INDICATOR_RADIUS, INDICATOR_RADIUS, 120, 60);
         redArc.setFill(Color.TRANSPARENT);

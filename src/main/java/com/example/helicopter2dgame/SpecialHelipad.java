@@ -43,20 +43,4 @@ public class SpecialHelipad extends Helipad {
     public void setHasPlus(boolean hasPlus) {
         this.hasPlus = hasPlus;
     }
-
-//    public boolean isHelicopterInside(Helicopter helicopter) {
-//        double helipadCenterX = getTranslateX() + width / 2;
-//        double helipadCenterY = getTranslateY() + height / 2;
-//
-//        double helicopterCenterX = helicopter.getTranslateX() + helicopter.getWidth() / 2;
-//        double helicopterCenterY = helicopter.getTranslateY() + helicopter.getHeight() / 2;
-//
-//        double minX = helipadCenterX - width / 2;
-//        double maxX = helipadCenterX + width / 2;
-//        double minY = helipadCenterY - height / 2;
-//        double maxY = helipadCenterY + height / 2;
-//
-//        return helicopterCenterX >= minX && helicopterCenterX <= maxX &&
-//                helicopterCenterY >= minY && helicopterCenterY <= maxY;
-//    }
 }

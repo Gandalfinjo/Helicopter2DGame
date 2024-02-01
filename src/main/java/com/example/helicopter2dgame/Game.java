@@ -93,13 +93,6 @@ public class Game extends Application {
         showHelicopterChoiceModal();
 
         Group root = new Group();
-
-//        Package[] packages = Package.generatePackages(5, WINDOW_WIDTH, WINDOW_HEIGHT);
-//
-//        for (Package aPackage : packages) {
-//            aPackage.getTransforms().add(new Translate(-WINDOW_WIDTH / 2, -WINDOW_HEIGHT / 2));
-//        }
-
         Translate package0Position = new Translate (
                 -PACKAGE_SIZE / 2 + WINDOW_WIDTH / 3,
                 -PACKAGE_SIZE / 2 - WINDOW_HEIGHT / 3
@@ -328,7 +321,7 @@ public class Game extends Application {
                         timer.stop();
                         helicopter.underWaterTimeline();
                         reverseHeightTimeline.play();
-                        speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+                        speedometer.changeSpeed(helicopter.getSpeed());
 
                         resultLabel.setText("Game Over");
                         endGameStage.show();
@@ -379,7 +372,7 @@ public class Game extends Application {
                 timer.stop();
                 helicopter.reverseScaleTimeline();
                 reverseHeightTimeline.play();
-                speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+                speedometer.changeSpeed(helicopter.getSpeed());
 
                 resultLabel.setText("Game Over");
                 endGameStage.show();
@@ -388,7 +381,7 @@ public class Game extends Application {
             }
 
             helicopter.update(elapsedSeconds, HELICOPTER_DAMP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
-            speedometer.changeSpeed(helicopter.getSpeed(), helicopter);
+            speedometer.changeSpeed(helicopter.getSpeed());
 
             for (int i = 0; i < packages.length; i++) {
                 if (packages[i] != null && packages[i].handleCollision(helicopter.getBoundsInParent())) {
@@ -474,7 +467,7 @@ public class Game extends Application {
         helicopter2Button.setOnAction(event -> onHelicopterChosen(0));
         helicopter3Button.setOnAction(event -> onHelicopterChosen(2));
 
-        Scene helicopterChoiceScene = new Scene(modalPane, 300, 200);
+        Scene helicopterChoiceScene = new Scene(modalPane, 500, 400);
         helicopterChoiceStage.setScene(helicopterChoiceScene);
 
         helicopterChoiceStage.showAndWait();
@@ -483,7 +476,7 @@ public class Game extends Application {
     private Button createHelicopterChoiceButton(String text, String helicopterImage) {
         Button button = new Button(text);
         button.setStyle("-fx-font-size: 14px;");
-        button.setPrefWidth(150);
+        button.setPrefWidth(200);
 
         Image image = new Image(Objects.requireNonNull(Game.class.getResourceAsStream(helicopterImage)));
         ImageView imageView = new ImageView(image);

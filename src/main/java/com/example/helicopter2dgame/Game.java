@@ -3,13 +3,17 @@ package com.example.helicopter2dgame;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -30,10 +34,20 @@ public class Game extends Application {
 
     private static final double HELICOPTER_WIDTH = 0.03 * WINDOW_WIDTH;
     private static final double HELICOPTER_HEIGHT = 0.07 * WINDOW_HEIGHT;
+    private static final double SLOW_HELICOPTER_WIDTH = 1.3 * HELICOPTER_WIDTH;
+    private static final double SLOW_HELICOPTER_HEIGHT = 1.3 * HELICOPTER_HEIGHT;
+    private static final double FAST_HELICOPTER_WIDTH = 0.7 * HELICOPTER_WIDTH;
+    private static final double FAST_HELICOPTER_HEIGHT = 0.7 * HELICOPTER_HEIGHT;
     private static final double HELICOPTER_SPEED_STEP = 5;
     private static final double HELICOPTER_DIRECTION_STEP = 5;
     private static final double HELICOPTER_DAMP = 0.995;
     private static final double HELICOPTER_MAX_SPEED = 200;
+    private static final double SLOW_HELICOPTER_MAX_SPEED = 100;
+    private static final double FAST_HELICOPTER_MAX_SPEED = 600;
+
+    private static final int SLOW_HELICOPTER = 0;
+    private static final int NORMAL_HELICOPTER = 1;
+    private static final int FAST_HELICOPTER = 2;
 
     private static final double HELIPAD_WIDTH = 0.1 * WINDOW_WIDTH;
     private static final double HELIPAD_HEIGHT = 0.1 * WINDOW_HEIGHT;
@@ -61,15 +75,23 @@ public class Game extends Application {
     private boolean isRotorTimeline = false;
     private double fuelLevel = 1.0;
 
+    private Helicopter helicopter;
+    private int type = 1;
+
     private Timeline timer;
     private long lastUpdateTime = System.currentTimeMillis();
 
     private List<WoodRectangle> obstacles;
 
+    private boolean sceneMovingMode = false;
+
     private Stage endGameStage;
+    private Stage helicopterChoiceStage;
 
     @Override
     public void start(Stage stage) {
+        showHelicopterChoiceModal();
+
         Group root = new Group();
 
 //        Package[] packages = Package.generatePackages(5, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -101,7 +123,22 @@ public class Game extends Application {
                 new Package (PACKAGE_SIZE, package3Position)
         };
 
-        Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT);
+        switch (type) {
+            case 0: {
+                helicopter = new Helicopter(SLOW_HELICOPTER_WIDTH, SLOW_HELICOPTER_HEIGHT, SLOW_HELICOPTER);
+                break;
+            }
+            case 1: {
+                helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT, NORMAL_HELICOPTER);
+                break;
+            }
+            case 2: {
+                helicopter = new Helicopter(FAST_HELICOPTER_WIDTH, FAST_HELICOPTER_HEIGHT, FAST_HELICOPTER);
+                break;
+            }
+        }
+
+        //Helicopter helicopter = new Helicopter(HELICOPTER_WIDTH, HELICOPTER_HEIGHT, NORMAL_HELICOPTER);
         Helipad helipad = new Helipad(HELIPAD_WIDTH, HELIPAD_HEIGHT);
         helipad.getTransforms().addAll(
                 new Translate(-HELIPAD_WIDTH / 2, -HELIPAD_HEIGHT / 2)
@@ -214,22 +251,69 @@ public class Game extends Application {
 
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (helicopter.isCanStart()) {
-                if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
-                    helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
-                    if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
-                    //speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
+                if (event.getCode().equals(KeyCode.DIGIT2)) {
+                    sceneMovingMode = true;
                 }
-                else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
-                    helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
-                    if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
-                    //speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
+                else if (event.getCode().equals(KeyCode.DIGIT1)) {
+                    sceneMovingMode = false;
                 }
 
-                if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
-                    helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                if (!sceneMovingMode) {
+                    if (event.getCode().equals(KeyCode.UP) || event.getCode().equals(KeyCode.W)) {
+                        if (type == 0) {
+                            helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() > SLOW_HELICOPTER_MAX_SPEED) helicopter.setSpeed(SLOW_HELICOPTER_MAX_SPEED);
+                        }
+                        else if (type == 1) {
+                            helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() > HELICOPTER_MAX_SPEED) helicopter.setSpeed(HELICOPTER_MAX_SPEED);
+                            //speedometer.changeSpeed(HELICOPTER_SPEED_STEP, helicopter);
+                        }
+                        else if (type == 2) {
+                            helicopter.changeSpeed(HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() > FAST_HELICOPTER_MAX_SPEED) helicopter.setSpeed(FAST_HELICOPTER_MAX_SPEED);
+                        }
+
+                    }
+                    else if (event.getCode().equals(KeyCode.DOWN) || event.getCode().equals(KeyCode.S)) {
+                        if (type == 0) {
+                            helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() < -SLOW_HELICOPTER_MAX_SPEED) helicopter.setSpeed(-SLOW_HELICOPTER_MAX_SPEED);
+                        }
+                        else if (type == 1) {
+                            helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() < -HELICOPTER_MAX_SPEED) helicopter.setSpeed(-HELICOPTER_MAX_SPEED);
+                            //speedometer.changeSpeed(-HELICOPTER_SPEED_STEP, helicopter);
+                        }
+                        else if (type == 2) {
+                            helicopter.changeSpeed(-HELICOPTER_SPEED_STEP);
+                            if (helicopter.getSpeed() < -FAST_HELICOPTER_MAX_SPEED) helicopter.setSpeed(-FAST_HELICOPTER_MAX_SPEED);
+                        }
+                    }
+
+                    if (event.getCode().equals(KeyCode.LEFT) || event.getCode().equals(KeyCode.A)) {
+                        helicopter.rotate(-HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                    }
+                    else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
+                        helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                    }
                 }
-                else if (event.getCode().equals(KeyCode.RIGHT) || event.getCode().equals(KeyCode.D)) {
-                    helicopter.rotate(HELICOPTER_DIRECTION_STEP, 0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, obstacles);
+                else {
+                    double sceneMoveStep = 10.0;
+
+                    if (event.getCode().equals(KeyCode.UP)) {
+                        root.setTranslateY(root.getTranslateY() + sceneMoveStep);
+                        helicopter.setTranslateY(helicopter.getTranslateY() - sceneMoveStep);
+                    } else if (event.getCode().equals(KeyCode.DOWN)) {
+                        root.setTranslateY(root.getTranslateY() - sceneMoveStep);
+                        helicopter.setTranslateY(helicopter.getTranslateY() + sceneMoveStep);
+                    } else if (event.getCode().equals(KeyCode.LEFT)) {
+                        root.setTranslateX(root.getTranslateX() + sceneMoveStep);
+                        helicopter.setTranslateX(helicopter.getTranslateX() - sceneMoveStep);
+                    } else if (event.getCode().equals(KeyCode.RIGHT)) {
+                        root.setTranslateX(root.getTranslateX() - sceneMoveStep);
+                        helicopter.setTranslateX(helicopter.getTranslateX() + sceneMoveStep);
+                    }
                 }
             }
 
@@ -331,7 +415,7 @@ public class Game extends Application {
             }
 
             double speed = Math.abs(helicopter.getSpeed());
-            double fuelConsumed = speed * FUEL_CONSUMPTION_RATE;
+            double fuelConsumed = sceneMovingMode ? HELICOPTER_SPEED_STEP * FUEL_CONSUMPTION_RATE : speed * FUEL_CONSUMPTION_RATE;
             fuelLevel -= fuelConsumed;
             fuelIndicator.setFuelLevel(fuelLevel);
 
@@ -366,6 +450,54 @@ public class Game extends Application {
             }
         };
         timer.start();
+    }
+
+    private void showHelicopterChoiceModal() {
+        helicopterChoiceStage = new Stage();
+        helicopterChoiceStage.initStyle(StageStyle.UTILITY);
+        helicopterChoiceStage.initModality(Modality.APPLICATION_MODAL);
+        helicopterChoiceStage.setTitle("Choose Your Helicopter");
+
+        VBox modalPane = new VBox(10);
+        modalPane.setAlignment(Pos.CENTER);
+
+        Label chooseLabel = new Label("Choose your helicopter:");
+        chooseLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        Button helicopter1Button = createHelicopterChoiceButton("Normal Helicopter", "normal_helicopter.png");
+        Button helicopter2Button = createHelicopterChoiceButton("Slow Helicopter", "slow_helicopter.png");
+        Button helicopter3Button = createHelicopterChoiceButton("Fast Helicopter", "fast_helicopter.png");
+
+        modalPane.getChildren().addAll(chooseLabel, helicopter1Button, helicopter2Button, helicopter3Button);
+
+        helicopter1Button.setOnAction(event -> onHelicopterChosen(1));
+        helicopter2Button.setOnAction(event -> onHelicopterChosen(0));
+        helicopter3Button.setOnAction(event -> onHelicopterChosen(2));
+
+        Scene helicopterChoiceScene = new Scene(modalPane, 300, 200);
+        helicopterChoiceStage.setScene(helicopterChoiceScene);
+
+        helicopterChoiceStage.showAndWait();
+    }
+
+    private Button createHelicopterChoiceButton(String text, String helicopterImage) {
+        Button button = new Button(text);
+        button.setStyle("-fx-font-size: 14px;");
+        button.setPrefWidth(150);
+
+        Image image = new Image(Objects.requireNonNull(Game.class.getResourceAsStream(helicopterImage)));
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(40);
+        imageView.setFitHeight(40);
+
+        button.setGraphic(imageView);
+
+        return button;
+    }
+
+    private void onHelicopterChosen(int type) {
+        this.type = type;
+        helicopterChoiceStage.close();
     }
 
     public static void main(String[] args) {

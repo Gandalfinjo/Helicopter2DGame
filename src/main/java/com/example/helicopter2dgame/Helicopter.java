@@ -7,7 +7,7 @@ import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
@@ -43,7 +43,7 @@ public class Helicopter extends Group {
         return canStart;
     }
 
-    public Helicopter(double width, double height) {
+    public Helicopter(double width, double height, int type) {
         direction = new Point2D(0, -1);
         bodyRotation = new Rotate(0);
         rotorRotation = new Rotate(0);
@@ -59,45 +59,144 @@ public class Helicopter extends Group {
         double bladeHeight = 0.8 * bodyHeight;
         double tailWidth = bodyHeight / 2;
 
-        body = new Rectangle(bodyWidth, bodyHeight);
-        body.setFill(Color.BLUE);
-        body.getTransforms().addAll(
-                new Translate(-bodyWidth / 2, 0)
-        );
+        if (type == 0) {
+            body = new Rectangle(bodyWidth, bodyHeight);
+            body.setFill(Color.BLUE);
+            body.getTransforms().addAll(
+                    new Translate(-bodyWidth / 2, 0)
+            );
 
-        cockpit = new Ellipse(width / 2, height / 3.5);
-        cockpit.setFill(Color.BLUE);
+            Stop[] stops = {
+                    new Stop(0, Color.GOLD),
+                    new Stop(1, Color.BLUE)
+            };
 
-        tail = new Rectangle(tailWidth, bodyWidth);
-        tail.setFill(Color.BLUE);
-        tail.getTransforms().addAll(
-                new Translate(-tailWidth / 2, 2 * bodyHeight / 3)
-        );
+            LinearGradient lg = new LinearGradient(0.5, 0, 0.5, 1, true, CycleMethod.NO_CYCLE, stops);
 
-        upperBody = new Group();
-        upperBody.getChildren().addAll(body, cockpit, tail);
-        upperBody.getTransforms().add(bodyRotation);
+            cockpit = new Ellipse(width / 2, height / 3.5);
+            cockpit.setFill(lg);
 
-        rotorBlade1 = new Rectangle(bladeWidth, bladeHeight);
-        rotorBlade1.setFill(Color.RED);
-        rotorBlade2 = new Rectangle(bladeWidth, bladeHeight);
-        rotorBlade2.setFill(Color.RED);
-        rotorBlade3 = new Rectangle(bladeWidth, bladeHeight);
-        rotorBlade3.setFill(Color.RED);
+            tail = new Rectangle(tailWidth, bodyWidth);
+            tail.setFill(Color.BLUE);
+            tail.getTransforms().addAll(
+                    new Translate(-tailWidth / 2, 2 * bodyHeight / 3)
+            );
 
-        rotorBlade1.getTransforms().addAll(
-                new Translate(-bladeWidth / 2, -bladeHeight)
-        );
+            upperBody = new Group();
+            upperBody.getChildren().addAll(body, cockpit, tail);
+            upperBody.getTransforms().add(bodyRotation);
 
-        rotorBlade2.getTransforms().addAll(
-                new Rotate(60),
-                new Translate(-bladeWidth / 2, 0)
-        );
+            rotorBlade1 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade1.setFill(Color.BLACK);
+            rotorBlade2 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade2.setFill(Color.BLACK);
+            rotorBlade3 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade3.setFill(Color.BLACK);
 
-        rotorBlade3.getTransforms().addAll(
-                new Rotate(300),
-                new Translate(-bladeWidth / 2, 0)
-        );
+            rotorBlade1.getTransforms().addAll(
+                    new Translate(-bladeWidth / 2, -bladeHeight)
+            );
+
+            rotorBlade2.getTransforms().addAll(
+                    new Rotate(60),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+
+            rotorBlade3.getTransforms().addAll(
+                    new Rotate(300),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+        }
+        else if (type == 1) {
+            body = new Rectangle(bodyWidth, bodyHeight);
+            body.setFill(Color.BLUE);
+            body.getTransforms().addAll(
+                    new Translate(-bodyWidth / 2, 0)
+            );
+
+            cockpit = new Ellipse(width / 2, height / 3.5);
+            cockpit.setFill(Color.BLUE);
+
+            tail = new Rectangle(tailWidth, bodyWidth);
+            tail.setFill(Color.BLUE);
+            tail.getTransforms().addAll(
+                    new Translate(-tailWidth / 2, 2 * bodyHeight / 3)
+            );
+
+            upperBody = new Group();
+            upperBody.getChildren().addAll(body, cockpit, tail);
+            upperBody.getTransforms().add(bodyRotation);
+
+            rotorBlade1 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade1.setFill(Color.RED);
+            rotorBlade2 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade2.setFill(Color.RED);
+            rotorBlade3 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade3.setFill(Color.RED);
+
+            rotorBlade1.getTransforms().addAll(
+                    new Translate(-bladeWidth / 2, -bladeHeight)
+            );
+
+            rotorBlade2.getTransforms().addAll(
+                    new Rotate(60),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+
+            rotorBlade3.getTransforms().addAll(
+                    new Rotate(300),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+        }
+        else {
+            body = new Rectangle(bodyWidth, bodyHeight);
+            body.setFill(Color.BLACK);
+            body.getTransforms().addAll(
+                    new Translate(-bodyWidth / 2, 0)
+            );
+
+            Stop[] stops = {
+                    new Stop(0, Color.BLACK),
+                    new Stop(1, Color.ORANGE)
+            };
+
+            RadialGradient rg = new RadialGradient(0, 0, 0.5, 0.5, 0.5, true, CycleMethod.NO_CYCLE, stops);
+
+            cockpit = new Ellipse(width / 2, height / 3.5);
+            cockpit.setFill(rg);
+
+            tail = new Rectangle(tailWidth, bodyWidth);
+            tail.setFill(Color.ORANGE);
+            tail.getTransforms().addAll(
+                    new Translate(-tailWidth / 2, 2 * bodyHeight / 3)
+            );
+
+            upperBody = new Group();
+            upperBody.getChildren().addAll(body, cockpit, tail);
+            upperBody.getTransforms().add(bodyRotation);
+
+            rotorBlade1 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade1.setFill(Color.ORANGE);
+            rotorBlade2 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade2.setFill(Color.ORANGE);
+            rotorBlade3 = new Rectangle(bladeWidth, bladeHeight);
+            rotorBlade3.setFill(Color.ORANGE);
+
+            rotorBlade1.getTransforms().addAll(
+                    new Translate(-bladeWidth / 2, -bladeHeight)
+            );
+
+            rotorBlade2.getTransforms().addAll(
+                    new Rotate(60),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+
+            rotorBlade3.getTransforms().addAll(
+                    new Rotate(300),
+                    new Translate(-bladeWidth / 2, 0)
+            );
+        }
+
 
         rotorBlades = new Group();
         rotorBlades.getChildren().addAll(rotorBlade1, rotorBlade2, rotorBlade3);

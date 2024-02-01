@@ -1,6 +1,7 @@
 package com.example.helicopter2dgame;
 
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -12,5 +13,7 @@ public class Water extends Rectangle {
         Image waterImage = new Image(Objects.requireNonNull(Game.class.getResourceAsStream("water.jpg")));
         ImagePattern imagePattern = new ImagePattern(waterImage);
         setFill(imagePattern);
+        setStroke(Color.GRAY);
+        setStrokeWidth(4);
     }
 }
